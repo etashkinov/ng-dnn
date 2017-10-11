@@ -13,7 +13,7 @@ node = figure_node.FigureNode()
 if not node.load():
     print('Create model')
     pre_fit_data = dao.get_pre_fit_data()
-    node.fit(pre_fit_data)
+    node.pre_fit(pre_fit_data)
     dao.save_fit_data(pre_fit_data)
     print('Model created')
 else:
@@ -62,14 +62,20 @@ def index():
 @application.route('/predict', methods=('POST',))
 def predict():
     data = request.get_data()
-    print('Data to predict:', data)
-    return jsonify(node.predict(get_image(data))), 200, {'Content-Type': 'application/json'}
+
+    prediction = node.predict(get_image(data))
+
+    print('Prediction:', prediction)
+
+    return jsonify(prediction), 200, {'Content-Type': 'application/json'}
 
 
 @application.route('/fit', methods=('POST',))
 def fit():
     data = request.get_data()
     label = request.args.get('label')
+
+    print('Fit', label)
 
     fit_data = dao.get_fit_data()
     fit_data.append((get_image(data), label))
@@ -86,4 +92,4 @@ def labels():
 
 
 if __name__ == '__main__':
-    application.run(debug=False)
+    application.run(debug=False, threaded=True)

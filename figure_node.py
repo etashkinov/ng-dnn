@@ -36,7 +36,7 @@ def img_to_array(image):
         we = []
         x.append(we)
         for value in row:
-            we.append(1 - value/255)
+            we.append(1 - value / 255)
     result = np.array(x).reshape(28, 28, 1)
 
     return result
@@ -58,6 +58,21 @@ def split(data):
     return np.array(x), np.array(y)
 
 
+def load(model):
+    if os.path.isfile(MODEL_NAME + ".index"):
+        model.load('./' + MODEL_NAME)
+        return True
+    else:
+        return False
+
+
+def fit(model, data):
+    np.random.shuffle(data)
+    x, y = split(data)
+    model.fit({'input': x}, {'target': y}, n_epoch=60, show_metric=True)
+    model.save(MODEL_NAME)
+
+
 class FigureNode:
     def __init__(self) -> None:
         super().__init__()
@@ -65,25 +80,20 @@ class FigureNode:
         self.model = create_model()
 
     def load(self):
-        if os.path.isfile(MODEL_NAME + ".index"):
-            self.model.load('./' + MODEL_NAME)
-            return True
-        else:
-            return False
+        return load(self.model)
 
     def fit(self, data):
-        np.random.shuffle(data)
+        with tf.Graph().as_default():
+            fit_model = create_model()
+            load(fit_model)
+            fit(fit_model, data)
+            self.model = fit_model
 
-        x, y = split(data)
-
-        print('Fit', x.shape, 'with', tf.get_default_graph().get_all_collection_keys())
-        self.model.fit({'input': x}, {'target': y}, n_epoch=60, show_metric=True)
-
-        self.model.save(MODEL_NAME)
+    def pre_fit(self, data):
+        fit(self.model, data)
 
     def predict(self, image):
         array = img_to_array(image)
         prediction = self.model.predict((array,))
         result = dict(zip(LABELS, prediction[0]))
-        print('Predicted:', result)
         return result
