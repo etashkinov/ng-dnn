@@ -9,7 +9,7 @@ from PIL import Image, ImageChops
 import figure_node
 import dao
 
-app = Flask(__name__)
+application = Flask(__name__)
 
 
 def crop(im):
@@ -44,19 +44,19 @@ def get_image(data):
     return crop(im)
 
 
-@app.route('/')
+@application.route('/')
 def index():
     return "Hello! I'm a simple neural network."
 
 
-@app.route('/predict', methods=('POST',))
+@application.route('/predict', methods=('POST',))
 def predict():
     data = request.get_data()
     print('Data to predict:', data)
     return jsonify(node.predict(get_image(data))), 200, {'Content-Type': 'application/json'}
 
 
-@app.route('/fit', methods=('POST',))
+@application.route('/fit', methods=('POST',))
 def fit():
     data = request.get_data()
     label = request.args.get('label')
@@ -70,7 +70,7 @@ def fit():
     return 'success'
 
 
-@app.route('/labels', methods=('GET',))
+@application.route('/labels', methods=('GET',))
 def labels():
     return jsonify(figure_node.LABELS)
 
@@ -86,4 +86,4 @@ if __name__ == '__main__':
     else:
         print('Model loaded')
 
-    app.run(debug=False)
+    application.run(debug=False)
