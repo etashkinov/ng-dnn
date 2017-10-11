@@ -1,0 +1,5 @@
+Flask==0.12.2
+numpy==1.13.3
+pickleshare==0.7.4
+tensorflow==1.1.0
+tflearn==0.3.1
