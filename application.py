@@ -9,6 +9,16 @@ from PIL import Image, ImageChops
 import figure_node
 import dao
 
+node = figure_node.FigureNode()
+if not node.load():
+    print('Create model')
+    pre_fit_data = dao.get_pre_fit_data()
+    node.fit(pre_fit_data)
+    dao.save_fit_data(pre_fit_data)
+    print('Model created')
+else:
+    print('Model loaded')
+
 application = Flask(__name__)
 
 
@@ -76,14 +86,4 @@ def labels():
 
 
 if __name__ == '__main__':
-    node = figure_node.FigureNode()
-    if not node.load():
-        print('Create model')
-        pre_fit_data = dao.get_pre_fit_data()
-        node.fit(pre_fit_data)
-        dao.save_fit_data(pre_fit_data)
-        print('Model created')
-    else:
-        print('Model loaded')
-
     application.run(debug=False)
