@@ -31,17 +31,15 @@ def crop(im):
     w = bbox[2] - bbox[0]
     h = bbox[3] - bbox[1]
 
-    side = max(w, h) * 1.2
-    w_ext = int((side - w) / 2)
-    h_ext = int((side - h) / 2)
+    side = int(max(w, h) * 1.2)
 
-    x1 = max(0, bbox[0] - w_ext)
-    y1 = max(0, bbox[1] - h_ext)
+    crop_img = im.crop(bbox)
 
-    x2 = min(im.size[0], bbox[2] + w_ext)
-    y2 = min(im.size[1], bbox[3] + h_ext)
+    new_size = (side, side)
+    result = Image.new("RGB", new_size, (255, 255, 255))
+    result.paste(crop_img, (int((new_size[0]-w)/2), int((new_size[1]-h)/2)))
 
-    return im.crop((x1, y1, x2, y2))
+    return result
 
 
 def get_image(data):
