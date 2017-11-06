@@ -3,11 +3,13 @@ from tflearn.layers.core import input_data, dropout, fully_connected
 from tflearn.layers.conv import conv_2d, max_pool_2d
 from tflearn.layers.normalization import local_response_normalization
 from tflearn.layers.estimator import regression
-import os
+from os import path
+from os import environ
 import tensorflow as tf
 import numpy as np
 
-MODEL_NAME = "model/model"
+STORAGE_PATH = environ.get("STORAGE_PATH")
+MODEL_PATH = STORAGE_PATH + "/model/model"
 LABELS = ('circle', 'line', 'arch')
 
 
@@ -59,10 +61,12 @@ def split(data):
 
 
 def load(model):
-    if os.path.isfile(MODEL_NAME + ".index"):
-        model.load('./' + MODEL_NAME)
+    if path.isfile(MODEL_PATH + ".index"):
+        model.load(MODEL_PATH)
+        print('Model loaded from', MODEL_PATH)
         return True
     else:
+        print('Model not found at', MODEL_PATH)
         return False
 
 
@@ -70,7 +74,8 @@ def fit(model, data):
     np.random.shuffle(data)
     x, y = split(data)
     model.fit({'input': x}, {'target': y}, n_epoch=60, show_metric=True)
-    model.save(MODEL_NAME)
+    model.save(MODEL_PATH)
+    print('Model fitted and saved:', MODEL_PATH)
 
 
 class FigureNode:

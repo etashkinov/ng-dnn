@@ -1,8 +1,10 @@
 from PIL import Image
 from os import walk
+from os import environ
 import pickle
 
-FIT_DATA_PATH = 'fit_data.pckl'
+STORAGE_PATH = environ.get("STORAGE_PATH")
+FIT_DATA_PATH = STORAGE_PATH + '/fit_data.pckl'
 
 PRE_FIT_DATE_PATH = 'pre_fit'
 
@@ -23,9 +25,11 @@ def get_pre_fit_data():
 
 def get_fit_data():
     with open(FIT_DATA_PATH, 'rb') as file:
+        print('Get fit data from', FIT_DATA_PATH)
         return pickle.load(file)
 
 
 def save_fit_data(fit_data):
     with open(FIT_DATA_PATH, 'wb') as file:
         pickle.dump(fit_data, file)
+        print('Fit data saved in', FIT_DATA_PATH)
